@@ -1,0 +1,40 @@
+import board
+import busio
+import digitalio
+import time
+
+step = digitalio.DigitalInOut(board.D23)        #name of GPIO used, not physical board pin
+direc = digitalio.DigitalInOut(board.D24)
+
+step.direction = digitalio.Direction.OUTPUT
+direc.direction = digitalio.Direction.OUTPUT
+
+for i in range(10):
+    step.value = True
+    direc.value = True
+    time.sleep(1)
+    print(i)
+step.value = True
+direc.value = False
+
+print("test")
+
+#  seq = [
+#  [1,0],
+#  [1,1],
+#  [0,1],
+#  [0,0],
+ 
+#]
+
+
+#for i in range(200):
+#  for seq in range(4):
+#      pin.value = True
+#      GPIO.output(control_pins[pin], halfstep_seq[halfstep][pin])
+#    time.sleep(0.001)
+    
+ #GPIO.cleanup()
+ 
+ 
+ # ORIG SOURCE: https://keithweaverca.medium.com/controlling-stepper-motors-using-python-with-a-raspberry-pi-b3fbd482f886
