@@ -1,62 +1,37 @@
 #!/usr/bin/env python3
 
-import time
-import board
-import digitalio
+from time import sleep
+import RPi.GPIO as GPIO
 
-enable_pin = digitalio.DigitalInOut(board.D18)
-A1pin = digitalio.DigitalInOut(board.D4)
-A2pin = digitalio.DigitalInOut(board.D17)
-B1pin = digitalio.DigitalInOut(board.D23)
-B2pin = digitalio.DigitalInOut(board.D24)
+DIR = 24   # Direction GPIO Pin
+STEP = 23  # Step GPIO Pin
+CW = 1     # Clockwise Rotation
+CCW = 0    # Counterclockwise Rotation
+SPR = 48   # Steps per Revolution (360 / 7.5)
 
-enable_pin.direction = digitalio.Direction.OUTPUT
-A1pin.direction = digitalio.Direction.OUTPUT
-A2pin.direction = digitalio.Direction.OUTPUT
-B1pin.direction = digitalio.Direction.OUTPUT
-B2pin.direction = digitalio.Direction.OUTPUT
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(DIR, GPIO.OUT)
+GPIO.setup(STEP, GPIO.OUT)
+GPIO.output(DIR, CW)
+print("CW")
+sleep(1)
+step_count = SPR
+delay = .0208
 
-enable_pin.value = True
+for x in range(step_count):
+    GPIO.output(STEP, GPIO.HIGH)
+    sleep(delay)
+    GPIO.output(STEP, GPIO.LOW)
+    sleep(delay)
 
+sleep(.5)
+GPIO.output(DIR, CCW)
+print("CCW")
+sleep(1)
+for x in range(step_count):
+    GPIO.output(STEP, GPIO.HIGH)
+    sleep(delay)
+    GPIO.output(STEP, GPIO.LOW)
+    sleep(delay)
 
-def forward(delay, steps):
-    i = 0
-    while i in range(0, steps):
-        setStep(1, 0, 1, 0)
-        time.sleep(delay)
-        setStep(0, 1, 1, 0)
-        time.sleep(delay)
-        setStep(0, 1, 0, 1)
-        time.sleep(delay)
-        setStep(1, 0, 0, 1)
-        time.sleep(delay)
-        i += 1
-
-
-def backwards(delay, steps):
-    i = 0
-    while i in range(0, steps):
-        setStep(1, 0, 0, 1)
-        time.sleep(delay)
-        setStep(0, 1, 0, 1)
-        time.sleep(delay)
-        setStep(0, 1, 1, 0)
-        time.sleep(delay)
-        setStep(1, 0, 1, 0)
-        time.sleep(delay)
-        i += 1
-
-
-def setStep(w1, w2, w3, w4):
-    A1pin.value = w1
-    A2pin.value = w2
-    B1pin.value = w3
-    B2pin.value = w4
-
-
-while True:
-    user_delay = input("Delay between steps (milliseconds)?")
-    user_steps = input("How many steps forward? ")
-    forward(int(user_delay) / 1000.0, int(user_steps))
-    user_steps = input("How many steps backwards? ")
-    backwards(int(user_delay) / 1000.0, int(user_steps))
+GPIO.cleanup()
